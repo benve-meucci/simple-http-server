@@ -29,7 +29,7 @@ public class App {
 
                 File file = new File("htdocs" + filePath);
                 if (file.exists()) {
-                    sendBinaryFile(s, file);
+                    sendBinaryFile(out, file);
                 } else {
                     String msg = "File non trovato";
                     out.writeBytes("HTTP/1.1 404 Not found\n");
@@ -47,8 +47,7 @@ public class App {
         }
     }
 
-    private static void sendBinaryFile(Socket socket, File file) throws IOException {
-        DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+    private static void sendBinaryFile(DataOutputStream output, File file) throws IOException {
         output.writeBytes("HTTP/1.1 200 OK\n");
         output.writeBytes("Content-Length: " + file.length() + "\n");
         output.writeBytes("Content-Type: "+getContentType(file)+"\n");
@@ -66,7 +65,6 @@ public class App {
         String [] s = f.getName().split("\\.");
         String ext = s[s.length-1];
         switch(ext) {
-            default:
             case "html":
             case "htm":
                 return "text/html";
@@ -74,6 +72,8 @@ public class App {
                 return "image/png";
             case "css":
                 return "text/css";
+            default:
+                return "";
         }
 
     }
