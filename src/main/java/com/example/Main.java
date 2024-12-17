@@ -31,41 +31,42 @@ public class Main {
                 System.out.println(header);
             } while (!header.isEmpty());
 
-            if (resource.endsWith("/"))
-                resource = resource + "index.html";
-
-            File file = new File("htdocs" + resource);
-            if (file.isDirectory()) {
-                out.writeBytes("HTTP/1.1 301 Moved Permanently\n");
+            if (!method.equals("GET")) {
+                out.writeBytes("HTTP/1.1 405 Method Not Allowed\n");
                 out.writeBytes("Content-Length: 0\n");
-                out.writeBytes("Location: " + resource + "/\n");
                 out.writeBytes("\n");
-
-            } else if (file.exists()) {
-                out.writeBytes("HTTP/1.1 200 OK\n");
-                out.writeBytes("Content-Length: " + file.length() + "\n");
-                out.writeBytes("Content-Type: " + getContentType(file) + "\n");
-                out.writeBytes("\n");
-
-                InputStream input = new FileInputStream(file);
-                byte[] buf = new byte[8192];
-                int n;
-                while ((n = input.read(buf)) != -1) {
-                    out.write(buf, 0, n);
-                }
-                input.close();
-
             } else {
-                String msg = "File non trovato";
-                out.writeBytes("HTTP/1.1 404 Not found\n");
-                out.writeBytes("Content-Length: " + msg.length() + "\n");
-                out.writeBytes("Content-Type: text/plain\n");
-                out.writeBytes("\n");
-                out.writeBytes(msg);
+                if (resource.endsWith("/"))
+                    resource = resource + "index.html";
+                File file = new File("htdocs" + resource);
+                if (file.isDirectory()) {
+                    out.writeBytes("HTTP/1.1 301 Moved Permanently\n");
+                    out.writeBytes("Content-Length: 0\n");
+                    out.writeBytes("Location: " + resource + "/\n");
+                    out.writeBytes("\n");
+                } else if (file.exists()) {
+                    out.writeBytes("HTTP/1.1 200 OK\n");
+                    out.writeBytes("Content-Length: " + file.length() + "\n");
+                    out.writeBytes("Content-Type: " + getContentType(file) + "\n");
+                    out.writeBytes("\n");
+                    InputStream input = new FileInputStream(file);
+                    byte[] buf = new byte[8192];
+                    int n;
+                    while ((n = input.read(buf)) != -1) {
+                        out.write(buf, 0, n);
+                    }
+                    input.close();
+                } else {
+                    String msg = "File non trovato";
+                    out.writeBytes("HTTP/1.1 404 Not found\n");
+                    out.writeBytes("Content-Length: " + msg.length() + "\n");
+                    out.writeBytes("Content-Type: text/plain\n");
+                    out.writeBytes("\n");
+                    out.writeBytes(msg);
+                }
             }
             s.close();
         }
-        
     }
 
     private static String getContentType(File f) {
