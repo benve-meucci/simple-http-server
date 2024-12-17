@@ -39,6 +39,8 @@ public class Main {
                 out.writeBytes("HTTP/1.1 301 Moved Permanently\n");
                 out.writeBytes("Content-Length: 0\n");
                 out.writeBytes("Location: " + resource + "/\n");
+                out.writeBytes("\n");
+
             } else if (file.exists()) {
                 out.writeBytes("HTTP/1.1 200 OK\n");
                 out.writeBytes("Content-Length: " + file.length() + "\n");
